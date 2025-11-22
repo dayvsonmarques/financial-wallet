@@ -39,9 +39,23 @@ docker compose up -d          # Iniciar
 docker compose down           # Parar
 ```
 
+### Corrigir permissões
+Se encontrar erros de permissão, execute:
+```bash
+./fix-permissions.sh
+```
+
 ### Executar comandos Artisan
+**Recomendado:** Use o wrapper para garantir permissões corretas:
+```bash
+./artisan-wrapper.sh [comando]
+# Exemplo: ./artisan-wrapper.sh migrate
+```
+
+**Alternativa:** Execute diretamente (pode criar arquivos como root):
 ```bash
 docker compose exec app php artisan [comando]
+# Após executar, rode: ./fix-permissions.sh
 ```
 
 ### Ver logs
