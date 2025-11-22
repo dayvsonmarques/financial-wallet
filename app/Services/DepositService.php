@@ -12,7 +12,7 @@ class DepositService
     public function deposit(User $user, float $amount, ?string $description = null): Transaction
     {
         if ($amount <= 0) {
-            throw new TransactionException('Amount must be greater than zero');
+            throw new TransactionException('O valor deve ser maior que zero');
         }
 
         return DB::transaction(function () use ($user, $amount, $description) {
@@ -24,7 +24,7 @@ class DepositService
                 'type' => 'deposit',
                 'amount' => $amount,
                 'status' => 'completed',
-                'description' => $description ?? 'Deposit',
+                'description' => $description ?? 'Depósito',
             ]);
 
             // Increment balance (works even if balance is negative)

@@ -43,7 +43,7 @@ class TransactionWebController extends Controller
                 $request->description
             );
 
-            return redirect('/dashboard')->with('success', 'Transfer completed successfully!');
+            return redirect('/dashboard')->with('success', 'Transferência realizada com sucesso!');
         } catch (InsufficientBalanceException $e) {
             return back()->withErrors(['amount' => $e->getMessage()])->withInput();
         } catch (TransactionException $e) {
@@ -65,7 +65,7 @@ class TransactionWebController extends Controller
                 $request->description
             );
 
-            return redirect('/dashboard')->with('success', 'Deposit completed successfully!');
+            return redirect('/dashboard')->with('success', 'Depósito realizado com sucesso!');
         } catch (TransactionException $e) {
             return back()->withErrors(['amount' => $e->getMessage()])->withInput();
         }
@@ -89,15 +89,15 @@ class TransactionWebController extends Controller
         try {
             if ($transaction->from_user_id !== $request->user()->id && 
                 $transaction->to_user_id !== $request->user()->id) {
-                return back()->withErrors(['error' => 'You can only reverse your own transactions']);
+                return back()->withErrors(['error' => 'Você só pode estornar suas próprias transações']);
             }
 
             $this->reversalService->reverse(
                 $transaction,
-                $request->description ?? 'Transaction reversed'
+                $request->description ?? 'Transação estornada'
             );
 
-            return redirect('/transactions')->with('success', 'Transaction reversed successfully!');
+            return redirect('/transactions')->with('success', 'Transação estornada com sucesso!');
         } catch (TransactionException $e) {
             return back()->withErrors(['error' => $e->getMessage()]);
         }

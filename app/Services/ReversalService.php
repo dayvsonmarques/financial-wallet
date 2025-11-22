@@ -11,14 +11,14 @@ class ReversalService
     public function reverse(Transaction $transaction, ?string $description = null): Transaction
     {
         if (!$transaction->canBeReversed()) {
-            throw new TransactionException('Transaction cannot be reversed');
+            throw new TransactionException('Esta transação não pode ser estornada');
         }
 
         return DB::transaction(function () use ($transaction, $description) {
             $transaction->lockForUpdate();
 
             if (!$transaction->canBeReversed()) {
-                throw new TransactionException('Transaction cannot be reversed');
+                throw new TransactionException('Esta transação não pode ser estornada');
             }
 
             $reversalTransaction = Transaction::create([
@@ -27,7 +27,7 @@ class ReversalService
                 'type' => 'reversal',
                 'amount' => $transaction->amount,
                 'status' => 'completed',
-                'description' => $description ?? 'Reversal of transaction #' . $transaction->id,
+                'description' => $description ?? 'Estorno da transação #' . $transaction->id,
                 'reversed_by_transaction_id' => $transaction->id,
             ]);
 

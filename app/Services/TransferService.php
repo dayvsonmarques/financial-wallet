@@ -13,11 +13,11 @@ class TransferService
     public function transfer(User $fromUser, User $toUser, float $amount, ?string $description = null): Transaction
     {
         if ($amount <= 0) {
-            throw new TransactionException('Amount must be greater than zero');
+            throw new TransactionException('O valor deve ser maior que zero');
         }
 
         if ($fromUser->id === $toUser->id) {
-            throw new TransactionException('Cannot transfer to yourself');
+            throw new TransactionException('Não é possível transferir para você mesmo');
         }
 
         if (!$fromUser->hasSufficientBalance($amount)) {

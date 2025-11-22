@@ -6,7 +6,7 @@ use Exception;
 
 class InsufficientBalanceException extends Exception
 {
-    public function __construct(string $message = 'Insufficient balance for this transaction')
+    public function __construct(string $message = 'Saldo insuficiente para esta transação')
     {
         parent::__construct($message, 422);
     }

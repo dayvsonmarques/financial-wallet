@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Transactions - Financial Wallet')
+@section('title', 'Transações - Carteira Financeira')
 
 @section('content')
 <div class="card">
-    <h2 style="margin-bottom: 20px;">Transaction History</h2>
+    <h2 style="margin-bottom: 20px;">Histórico de Transações</h2>
     
     @if($transactions->count() > 0)
         <div>
@@ -13,16 +13,26 @@
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
-                                <span class="transaction-type {{ $transaction->type }}">{{ ucfirst($transaction->type) }}</span>
+                                <span class="transaction-type {{ $transaction->type }}">
+                                    @if($transaction->type === 'transfer')
+                                        Transferência
+                                    @elseif($transaction->type === 'deposit')
+                                        Depósito
+                                    @elseif($transaction->type === 'reversal')
+                                        Estorno
+                                    @else
+                                        {{ ucfirst($transaction->type) }}
+                                    @endif
+                                </span>
                                 <span style="font-weight: 500;">
                                     @if($transaction->type === 'transfer')
                                         @if($transaction->from_user_id === auth()->id())
-                                            To: {{ $transaction->toUser->name ?? 'N/A' }}
+                                            Para: {{ $transaction->toUser->name ?? 'N/A' }}
                                         @else
-                                            From: {{ $transaction->fromUser->name ?? 'N/A' }}
+                                            De: {{ $transaction->fromUser->name ?? 'N/A' }}
                                         @endif
                                     @else
-                                        {{ $transaction->description ?? 'Deposit' }}
+                                        {{ $transaction->description ?? 'Depósito' }}
                                     @endif
                                 </span>
                             </div>
@@ -32,7 +42,7 @@
                             <div style="font-size: 12px; color: #999; margin-top: 5px;">
                                 {{ $transaction->created_at->format('d/m/Y H:i:s') }}
                                 @if($transaction->status === 'reversed')
-                                    <span style="color: #dc3545;">• Reversed</span>
+                                    <span style="color: #dc3545;">• Estornado</span>
                                 @endif
                             </div>
                         </div>
@@ -43,7 +53,7 @@
                             @if($transaction->canBeReversed() && $transaction->from_user_id === auth()->id())
                                 <form method="POST" action="/transactions/{{ $transaction->id }}/reverse" style="margin-top: 10px; display: inline-block;">
                                     @csrf
-                                    <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="return confirm('Are you sure you want to reverse this transaction?')">Reverse</button>
+                                    <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 12px;" onclick="return confirm('Tem certeza que deseja estornar esta transação?')">Estornar</button>
                                 </form>
                             @endif
                         </div>
@@ -57,8 +67,8 @@
         </div>
     @else
         <div style="text-align: center; padding: 40px; color: #666;">
-            <p>No transactions found.</p>
-            <a href="/transactions/deposit" class="btn btn-success mt-20">Make your first deposit</a>
+            <p>Nenhuma transação encontrada.</p>
+            <a href="/transactions/deposit" class="btn btn-success mt-20">Faça seu primeiro depósito</a>
         </div>
     @endif
 </div>

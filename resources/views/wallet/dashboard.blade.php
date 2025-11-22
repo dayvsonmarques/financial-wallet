@@ -1,46 +1,56 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard - Financial Wallet')
+@section('title', 'Painel - Carteira Financeira')
 
 @section('content')
 <div class="card">
-    <h2 style="margin-bottom: 20px;">Dashboard</h2>
+    <h2 style="margin-bottom: 20px;">Painel</h2>
     
     <div class="balance">
-        Balance: R$ {{ number_format($user->balance, 2, ',', '.') }}
+        Saldo: R$ {{ number_format($user->balance, 2, ',', '.') }}
     </div>
     
     <div class="grid" style="margin-top: 30px;">
         <a href="/transactions/transfer" class="card" style="text-decoration: none; text-align: center;">
-            <h3>💸 Transfer</h3>
-            <p style="color: #666; margin-top: 10px;">Send money to another user</p>
+            <h3>💸 Transferir</h3>
+            <p style="color: #666; margin-top: 10px;">Enviar dinheiro para outro usuário</p>
         </a>
         
         <a href="/transactions/deposit" class="card" style="text-decoration: none; text-align: center;">
-            <h3>💰 Deposit</h3>
-            <p style="color: #666; margin-top: 10px;">Add money to your account</p>
+            <h3>💰 Depositar</h3>
+            <p style="color: #666; margin-top: 10px;">Adicionar dinheiro à sua conta</p>
         </a>
         
         <a href="/transactions" class="card" style="text-decoration: none; text-align: center;">
-            <h3>📋 Transactions</h3>
-            <p style="color: #666; margin-top: 10px;">View transaction history</p>
+            <h3>📋 Transações</h3>
+            <p style="color: #666; margin-top: 10px;">Ver histórico de transações</p>
         </a>
     </div>
     
     @if($transactions->count() > 0)
         <div class="card mt-20">
-            <h3 style="margin-bottom: 15px;">Recent Transactions</h3>
+            <h3 style="margin-bottom: 15px;">Transações Recentes</h3>
             @foreach($transactions as $transaction)
                 <div class="transaction-item">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <div>
-                            <span class="transaction-type {{ $transaction->type }}">{{ ucfirst($transaction->type) }}</span>
+                            <span class="transaction-type {{ $transaction->type }}">
+                                @if($transaction->type === 'transfer')
+                                    Transferência
+                                @elseif($transaction->type === 'deposit')
+                                    Depósito
+                                @elseif($transaction->type === 'reversal')
+                                    Estorno
+                                @else
+                                    {{ ucfirst($transaction->type) }}
+                                @endif
+                            </span>
                             <span style="margin-left: 10px; color: #666;">
                                 @if($transaction->type === 'transfer')
                                     @if($transaction->from_user_id === $user->id)
-                                        To: {{ $transaction->toUser->name ?? 'N/A' }}
+                                        Para: {{ $transaction->toUser->name ?? 'N/A' }}
                                     @else
-                                        From: {{ $transaction->fromUser->name ?? 'N/A' }}
+                                        De: {{ $transaction->fromUser->name ?? 'N/A' }}
                                     @endif
                                 @else
                                     {{ $transaction->description ?? 'N/A' }}
@@ -56,7 +66,7 @@
                     <div style="margin-top: 5px; font-size: 12px; color: #999;">
                         {{ $transaction->created_at->format('d/m/Y H:i') }}
                         @if($transaction->status === 'reversed')
-                            <span style="color: #dc3545;">(Reversed)</span>
+                            <span style="color: #dc3545;">(Estornado)</span>
                         @endif
                     </div>
                 </div>
