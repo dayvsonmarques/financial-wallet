@@ -1,90 +1,75 @@
-# Financial Wallet
+# Carteira Financeira
 
-Aplicação Laravel 12 com MariaDB configurada para rodar com Docker.
+Sistema de carteira digital desenvolvido em Laravel que permite transferências, depósitos e gestão de saldo entre usuários.
 
-## Pré-requisitos
+## Como rodar
 
-- Docker
-- Docker Compose
+Você só precisa ter Docker e Docker Compose instalados. Depois é só executar:
 
-## Instalação e Execução
-
-1. **Clone o repositório e entre no diretório:**
-   ```bash
-   cd financial-wallet
-   ```
-
-2. **Execute o script de inicialização:**
-   ```bash
-   ./docker-init.sh
-   ```
-
-   Este script irá:
-   - Criar o arquivo `.env` se não existir
-   - Iniciar os containers (Laravel + MariaDB)
-   - Gerar a chave da aplicação
-   - Executar as migrações
-   - Executar os seeders
-
-3. **Acesse a aplicação:**
-   ```
-   http://localhost:8000
-   ```
-
-## Comandos Úteis
-
-### Iniciar/Parar containers
 ```bash
-docker compose up -d          # Iniciar
-docker compose down           # Parar
+./docker-init.sh
 ```
 
-### Corrigir permissões
-Se encontrar erros de permissão, execute:
+Esse script faz tudo: cria o `.env`, sobe os containers, roda as migrações e seeders. Quando terminar, acesse `http://localhost:8000`.
+
+## Comandos que você pode precisar
+
 ```bash
+# Iniciar/parar
+docker compose up -d
+docker compose down
+
+# Corrigir permissões (se der erro)
 ./fix-permissions.sh
-```
 
-### Executar comandos Artisan
-**Recomendado:** Use o wrapper para garantir permissões corretas:
-```bash
-./artisan-wrapper.sh [comando]
-# Exemplo: ./artisan-wrapper.sh migrate
-```
-
-**Alternativa:** Execute diretamente (pode criar arquivos como root):
-```bash
+# Rodar comandos artisan
+./artisan-wrapper.sh migrate
+# ou
 docker compose exec app php artisan [comando]
-# Após executar, rode: ./fix-permissions.sh
-```
 
-### Ver logs
-```bash
+# Ver logs
 docker compose logs -f app
-```
 
-### Acessar o container
-```bash
+# Entrar no container
 docker compose exec app bash
 ```
 
-### Acessar o MariaDB
+## Credenciais
+
+**Banco de dados:**
+- Host: `localhost:3307`
+- Usuário: `financial_wallet_user`
+- Senha: `financial_wallet_password`
+- Database: `financial_wallet`
+
+**Usuário de teste:**
+- Email: `test@example.com`
+- Senha: `password`
+
+## Testes
+
+O projeto tem testes unitários e de integração. Para rodar:
+
 ```bash
-docker compose exec mariadb mysql -u financial_wallet_user -pfinancial_wallet_password financial_wallet
+# Todos os testes
+docker compose exec app php artisan test
+
+# Só testes unitários
+docker compose exec app php artisan test --testsuite=Unit
+
+# Só testes de integração
+docker compose exec app php artisan test --testsuite=Feature
 ```
 
-## Configuração
-
-- **Aplicação**: http://localhost:8000
-- **MariaDB**: localhost:3307
-- **Credenciais DB**:
-  - Usuário: `financial_wallet_user`
-  - Senha: `financial_wallet_password`
-  - Database: `financial_wallet`
+Atualmente temos **55 testes** cobrindo:
+- Serviços de transação (transferência, depósito, estorno)
+- Modelos (User, Transaction)
+- Endpoints da API (autenticação, transações, wallet)
+- Regras de negócio e validações
 
 ## Tecnologias
 
-- Laravel 12.39.0
+- Laravel 12
 - PHP 8.2
 - MariaDB 10.11
-- Docker & Docker Compose
+- Docker
