@@ -29,15 +29,15 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::prefix('transactions')->group(function () {
         Route::get('/', [TransactionController::class, 'index']);
         Route::get('/{transaction}', [TransactionController::class, 'show']);
-        
+
         // Transferências com rate limiting específico
         Route::post('/transfer', [TransactionController::class, 'transfer'])
             ->middleware('throttle:transfers');
-        
+
         // Depósitos com rate limiting específico
         Route::post('/deposit', [TransactionController::class, 'deposit'])
             ->middleware('throttle:deposits');
-        
+
         // Reversões com rate limiting específico
         Route::post('/{transaction}/reverse', [TransactionController::class, 'reverse'])
             ->middleware('throttle:reversals');
