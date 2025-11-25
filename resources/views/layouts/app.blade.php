@@ -88,6 +88,66 @@
 
         @yield('content')
     </div>
+
+    <script>
+        // Máscara para campos monetários
+        document.addEventListener('DOMContentLoaded', function() {
+            const moneyInputs = document.querySelectorAll('input[name="amount"]');
+
+            moneyInputs.forEach(input => {
+                // Adicionar prefixo R$
+                input.type = 'text';
+                input.inputMode = 'decimal';
+
+                // Formatar valor ao digitar
+                input.addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\D/g, '');
+
+                    if (value === '') {
+                        e.target.value = '';
+                        return;
+                    }
+
+                    // Converter para decimal
+                    value = (parseInt(value) / 100).toFixed(2);
+
+                    // Formatar para Real brasileiro
+                    e.target.value = 'R$ ' + value.replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                });
+
+                // Ao enviar o formulário, converter de volta para número
+                input.closest('form').addEventListener('submit', function(e) {
+                    moneyInputs.forEach(inp => {
+                        const cleanValue = inp.value
+                            .replace('R$', '')
+                            .replace(/\s/g, '')
+                            .replace(/\./g, '')
+                            .replace(',', '.');
+
+                        // Criar input hidden com valor numérico
+                        const hiddenInput = document.createElement('input');
+                        hiddenInput.type = 'hidden';
+                        hiddenInput.name = inp.name;
+                        hiddenInput.value = cleanValue;
+
+                        // Remover name do input original para não enviar
+                        inp.removeAttribute('name');
+
+                        // Adicionar hidden input ao form
+                        inp.parentNode.appendChild(hiddenInput);
+                    });
+                });
+
+                // Se já tem valor (old input), formatar
+                if (input.value) {
+                    const numValue = parseFloat(input.value);
+                    if (!isNaN(numValue)) {
+                        input.value = 'R$ ' + numValue.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 
