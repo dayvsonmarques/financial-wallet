@@ -50,12 +50,24 @@ docker compose exec app bash
 - Senha: `financial_wallet_password`
 - Database: `financial_wallet`
 
-**Usuário de teste (criado automaticamente):**
-- Email: `test@example.com`
-- Senha: `password`
-- Saldo inicial: `R$ 0,00`
+**Usuários de teste (criados automaticamente pelo seeder):**
 
-Esse usuário é criado automaticamente quando você roda o `docker-init.sh`. Você pode usar essas credenciais para fazer login na aplicação e testar as funcionalidades.
+1. **Admin User**
+   - Email: `admin@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `R$ 10.000,00`
+
+2. **Teste User**
+   - Email: `teste@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `R$ 1.000,00`
+
+3. **João Silva**
+   - Email: `joao@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `R$ 50,00`
+
+Esses usuários são criados automaticamente quando você roda o `docker-init.sh`. Você pode usar essas credenciais para fazer login na aplicação e testar as funcionalidades.
 
 ## Testes
 
@@ -77,6 +89,77 @@ Atualmente temos **55 testes** cobrindo:
 - Modelos (User, Transaction)
 - Endpoints da API (autenticação, transações, wallet)
 - Regras de negócio e validações
+
+## Segurança
+
+O sistema implementa várias camadas de segurança para proteger contra abusos e fraudes:
+
+### Rate Limiting (Limite de Requisições)
+
+Para evitar spam, ataques automatizados e uso abusivo do sistema, implementamos limites de requisições por tempo:
+
+**Login e Registro:**
+- **5 tentativas por minuto** por IP
+- Protege contra ataques de força bruta (tentativas de adivinhar senhas)
+- Se você errar a senha 5 vezes, precisa esperar 1 minuto para tentar novamente
+
+**Transferências:**
+- **5 transferências por minuto** por usuário
+- **50 transferências por hora** por usuário
+- Evita que alguém faça centenas de transferências em sequência (possível fraude ou erro)
+
+**Depósitos:**
+- **5 depósitos por minuto** por usuário
+- **20 depósitos por hora** por usuário
+- Previne automações maliciosas e uso abusivo da função de depósito
+
+**Reversões (Estornos):**
+- **3 reversões por minuto** por usuário
+- **10 reversões por hora** por usuário
+- Limite mais restritivo pois reversões são operações sensíveis
+
+**API Geral:**
+- **60 requisições por minuto** por usuário/IP
+- Aplica-se a endpoints que não têm limite específico
+
+**O que acontece ao exceder o limite:**
+- O sistema retorna erro HTTP 429 (Too Many Requests)
+- Uma mensagem informa quanto tempo você precisa esperar
+- Os limites são reiniciados automaticamente após o período
+
+**Exemplo prático:**
+```
+Cenário: Você tenta fazer 6 transferências em 1 minuto
+
+1ª transferência → ✅ OK
+2ª transferência → ✅ OK
+3ª transferência → ✅ OK
+4ª transferência → ✅ OK
+5ª transferência → ✅ OK
+6ª transferência → ❌ Erro 429: "Too Many Attempts. Please try again in 60 seconds."
+
+Após 1 minuto, você pode fazer mais 5 transferências.
+```
+
+### Outras Proteções de Segurança
+
+**Autenticação:**
+- Sessões seguras com Laravel Sanctum
+- CSRF protection em todos os formulários
+- Hash seguro de senhas com bcrypt
+- Tokens de autenticação com expiração
+
+**Validações de Negócio:**
+- Verificação de saldo antes de transferências
+- Valores mínimos e máximos definidos
+- Validação de existência do destinatário
+- Prevenção de operações duplicadas
+
+**Transações no Banco de Dados:**
+- Transações atômicas (ACID) - tudo ou nada
+- Locks para evitar condições de corrida
+- Reversão automática em caso de erro
+- Logs de auditoria de todas as operações
 
 ## Observabilidade
 
