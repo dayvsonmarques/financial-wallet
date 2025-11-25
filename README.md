@@ -19,13 +19,14 @@ Esse script faz tudo: cria o `.env`, sobe os containers, roda as migrações e s
 docker compose up -d
 docker compose down
 
-# Corrigir permissões (se der erro)
+# Corrigir permissões (execute sempre que houver problemas de permissão)
 ./fix-permissions.sh
 
-# Rodar comandos artisan
+# Rodar comandos artisan (SEMPRE use este wrapper para evitar problemas de permissão)
 ./artisan-wrapper.sh migrate
-# ou
-docker compose exec app php artisan [comando]
+./artisan-wrapper.sh make:controller NomeController
+# ou manualmente (não recomendado):
+docker compose exec -u www-data app php artisan [comando]
 
 # Ver logs
 docker compose logs -f app
@@ -33,6 +34,13 @@ docker compose logs -f app
 # Entrar no container
 docker compose exec app bash
 ```
+
+**⚠️ Importante sobre permissões:**
+- Sempre use `./artisan-wrapper.sh` para comandos artisan
+- Se o Cursor mostrar erros de permissão, execute `./fix-permissions.sh`
+- Se o script pedir senha sudo, é normal - ele precisa corrigir ownership de arquivos
+- Arquivos criados manualmente podem precisar de correção de permissões
+- **Solução rápida**: Se persistir, execute `sudo ./fix-permissions.sh` uma vez
 
 ## Credenciais
 
@@ -42,9 +50,12 @@ docker compose exec app bash
 - Senha: `financial_wallet_password`
 - Database: `financial_wallet`
 
-**Usuário de teste:**
+**Usuário de teste (criado automaticamente):**
 - Email: `test@example.com`
 - Senha: `password`
+- Saldo inicial: `R$ 0,00`
+
+Esse usuário é criado automaticamente quando você roda o `docker-init.sh`. Você pode usar essas credenciais para fazer login na aplicação e testar as funcionalidades.
 
 ## Testes
 
@@ -66,6 +77,32 @@ Atualmente temos **55 testes** cobrindo:
 - Modelos (User, Transaction)
 - Endpoints da API (autenticação, transações, wallet)
 - Regras de negócio e validações
+
+## Observabilidade
+
+O projeto tem logging estruturado e monitoramento implementado:
+
+**Logs de transações:**
+- Todas as transações são logadas em `storage/logs/transactions.log`
+- Inclui informações sobre início, conclusão e falhas
+- Mantém histórico por 30 dias
+
+**Monitoramento de requisições:**
+- Middleware registra todas as requisições com métricas de performance
+- Logs incluem: tempo de resposta, uso de memória, status HTTP
+
+**Health checks:**
+- `/up` - Health check básico do Laravel
+- `/api/health` - Health check detalhado (database, cache, tempo de resposta)
+
+**Ver logs:**
+```bash
+# Logs gerais
+docker compose exec app tail -f storage/logs/laravel.log
+
+# Logs de transações
+docker compose exec app tail -f storage/logs/transactions.log
+```
 
 ## Tecnologias
 
