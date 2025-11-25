@@ -2,6 +2,13 @@
 
 Sistema de carteira digital desenvolvido em Laravel que permite transferências, depósitos e gestão de saldo entre usuários.
 
+## Tecnologias
+
+- Laravel 12
+- PHP 8.2
+- MariaDB 10.11
+- Docker
+
 ## Como rodar
 
 Você só precisa ter Docker e Docker Compose instalados. Depois é só executar:
@@ -161,6 +168,22 @@ Após 1 minuto, você pode fazer mais 5 transferências.
 - Reversão automática em caso de erro
 - Logs de auditoria de todas as operações
 
+### Proteções Ativas
+
+O sistema conta com as seguintes proteções implementadas:
+
+- ✅ **Brute Force Protection** - Limite de 5 tentativas de login por minuto
+- ✅ **Spam Prevention** - Rate limiting em todas as operações de transação
+- ✅ **Fraud Detection** - Validações de saldo e limites por hora
+- ✅ **DDoS Mitigation** - Rate limiting geral de 60 requisições/minuto
+- ✅ **Clear Error Messages** - Retorno HTTP 429 com tempo de espera
+- ✅ **CSRF Protection** - Proteção em todos os formulários
+- ✅ **Secure Sessions** - Autenticação com Laravel Sanctum
+- ✅ **Password Hashing** - Bcrypt com salt automático
+- ✅ **SQL Injection Protection** - Eloquent ORM com prepared statements
+- ✅ **Transaction Locks** - Prevenção de race conditions no banco
+- ✅ **Audit Logging** - Registro de todas as operações sensíveis
+
 ## Observabilidade
 
 O projeto tem logging estruturado e monitoramento implementado:
@@ -186,10 +209,3 @@ docker compose exec app tail -f storage/logs/laravel.log
 # Logs de transações
 docker compose exec app tail -f storage/logs/transactions.log
 ```
-
-## Tecnologias
-
-- Laravel 12
-- PHP 8.2
-- MariaDB 10.11
-- Docker
