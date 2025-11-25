@@ -37,7 +37,7 @@ docker compose exec app bash
 
 **⚠️ Importante sobre permissões:**
 - Sempre use `./artisan-wrapper.sh` para comandos artisan
-- Se o Cursor mostrar erros de permissão, execute `./fix-permissions.sh`
+- Se houver erros de permissão, execute `./fix-permissions.sh`
 - Se o script pedir senha sudo, é normal - ele precisa corrigir ownership de arquivos
 - Arquivos criados manualmente podem precisar de correção de permissões
 - **Solução rápida**: Se persistir, execute `sudo ./fix-permissions.sh` uma vez
