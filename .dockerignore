@@ -1,13 +1,68 @@
+# Node modules
 /node_modules
+
+# Public
 /public/hot
 /public/storage
+
+# Storage (exceto estrutura)
 /storage/*.key
+storage/app/*
+!storage/app/.gitignore
+!storage/app/public
+!storage/app/private
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/testing/*
+!storage/framework/testing/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+storage/logs/*
+!storage/logs/.gitignore
+
+# Bootstrap cache (exceto estrutura)
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Vendor (será instalado no build)
 /vendor
+
+# Environments
 .env
 .env.backup
 .env.production
+.env.*
+!.env.example
+
+# Git
 .git
+.gitignore
+.gitattributes
+
+# IDEs
 /.fleet
 /.idea
 /.vscode
+
+# Tests
+tests/
+.phpunit.result.cache
+phpunit.xml
+
+# Development
+docker-compose.yml
+docker-init.sh
+docker-entrypoint.sh
+Dockerfile
+!Dockerfile.production
+
+# Documentation (exceto README)
+*.md
+!README.md
+
+# GitHub
+.github/
+
 

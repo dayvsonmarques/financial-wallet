@@ -13,6 +13,8 @@ Sistema de carteira digital desenvolvido em Laravel que permite transferências,
 
 ## Como rodar
 
+### Desenvolvimento Local
+
 Você só precisa ter Docker e Docker Compose instalados. Depois é só executar:
 
 ```bash
@@ -20,6 +22,17 @@ Você só precisa ter Docker e Docker Compose instalados. Depois é só executar
 ```
 
 Esse script faz tudo: cria o `.env`, sobe os containers, roda as migrações e seeders. Quando terminar, acesse `http://localhost:8000`.
+
+### Deploy em Produção (Railway.app)
+
+Para fazer deploy em produção, consulte o guia completo: **[DEPLOY.md](DEPLOY.md)**
+
+**Resumo rápido:**
+1. Faça push do código para GitHub
+2. Conecte seu repositório no [Railway.app](https://railway.app)
+3. Adicione MySQL database
+4. Configure variáveis de ambiente
+5. Deploy automático! 🚀
 
 ## Comandos que você pode precisar
 
