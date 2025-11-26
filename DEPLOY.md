@@ -39,19 +39,45 @@ git push origin main
 2. Selecione **"Database"** → **"Add MySQL"**
 3. Railway criará automaticamente o banco de dados
 
-**Variáveis injetadas automaticamente:**
-- `MYSQLHOST`
-- `MYSQLPORT`
-- `MYSQLDATABASE`
-- `MYSQLUSER`
-- `MYSQLPASSWORD`
+4. **⚠️ IMPORTANTE - Conectar MySQL ao serviço da aplicação:**
+   - Clique no **serviço da aplicação** (não no MySQL)
+   - Vá em **"Variables"**
+   - Procure por **"Reference Variables"** ou **"Service Variables"**
+   - Clique em **"+ New Variable"** → **"Add Reference"**
+   - Selecione o serviço **MySQL**
+   - Selecione TODAS estas variáveis:
+     - `MYSQLHOST`
+     - `MYSQLPORT`
+     - `MYSQLDATABASE`
+     - `MYSQLUSER`
+     - `MYSQLPASSWORD`
+
+**Como saber se funcionou:**
+- As variáveis aparecerão na lista com ícone de "link" 🔗
+- Valores começam com `${{MySQL.MYSQL...}}`
+
+**Se não aparecerem automaticamente:**
+1. Clique no MySQL no dashboard
+2. Vá em **"Connect"** ou **"Variables"**
+3. Copie os valores manualmente para o serviço da app
 
 ### 4. Configurar Variáveis de Ambiente
 
+**⚠️ ANTES DE COMEÇAR:** Confirme que as variáveis MySQL foram conectadas (passo 3)
+
 1. Clique no serviço da aplicação (não no banco)
 2. Vá em **"Variables"**
-3. Clique em **"RAW Editor"**
-4. Cole as seguintes variáveis:
+3. Verifique se estas variáveis já aparecem (com ícone 🔗):
+   - `MYSQLHOST`
+   - `MYSQLPORT`
+   - `MYSQLDATABASE`
+   - `MYSQLUSER`
+   - `MYSQLPASSWORD`
+   
+   **Se NÃO aparecerem:** Volte ao passo 3 e adicione as referências!
+
+4. Clique em **"RAW Editor"**
+5. Cole as seguintes variáveis:
 
 ```env
 APP_NAME=Carteira Financeira
@@ -73,6 +99,8 @@ QUEUE_CONNECTION=database
    ```bash
    # Execute localmente:
    php artisan key:generate --show
+   # OU no Docker:
+   docker compose exec app php artisan key:generate --show
    ```
    
    Copie o resultado (exemplo: `base64:xxxxxxxxxxx`) e adicione como variável:
@@ -82,14 +110,16 @@ QUEUE_CONNECTION=database
    
    **IMPORTANTE:** Sem o APP_KEY a aplicação **NÃO FUNCIONARÁ**!
 
-6. **Verificar Variáveis MySQL:**
-   - Confirme que estas variáveis foram injetadas automaticamente pelo Railway:
-     - ✅ `MYSQLHOST`
-     - ✅ `MYSQLPORT`
-     - ✅ `MYSQLDATABASE`
-     - ✅ `MYSQLUSER`
-     - ✅ `MYSQLPASSWORD`
-   - **Se não aparecerem:** volte ao passo 3 e adicione o MySQL novamente
+6. **✅ Checklist final de variáveis:**
+   
+   Confirme que estas variáveis estão presentes:
+   - ✅ `APP_KEY` (gerado por você)
+   - ✅ `APP_ENV=production`
+   - ✅ `MYSQLHOST` (referência ao MySQL) 🔗
+   - ✅ `MYSQLPORT` (referência ao MySQL) 🔗
+   - ✅ `MYSQLDATABASE` (referência ao MySQL) 🔗
+   - ✅ `MYSQLUSER` (referência ao MySQL) 🔗
+   - ✅ `MYSQLPASSWORD` (referência ao MySQL) 🔗
 
 ### 5. Configurar Domínio e APP_URL
 
