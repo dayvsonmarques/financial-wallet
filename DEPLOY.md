@@ -200,10 +200,33 @@ php artisan key:generate --show
 APP_KEY=base64:resultado-aqui
 ```
 
+### Erro: "Database file at path [database.sqlite] does not exist"
+
+**Causa:** Aplicação tentando usar SQLite ao invés de MySQL.
+
+**Solução:**
+1. Verifique se o serviço MySQL está conectado ao projeto
+2. No Railway Dashboard, vá em **"Variables"**
+3. Confirme que estas variáveis existem (injetadas automaticamente):
+   - `MYSQLHOST`
+   - `MYSQLPORT`
+   - `MYSQLDATABASE`
+   - `MYSQLUSER`
+   - `MYSQLPASSWORD`
+4. Se não existirem, adicione o MySQL novamente: **"+ New"** → **"Database"** → **"Add MySQL"**
+5. Redesploy a aplicação: **"Deployments"** → **"Redeploy"**
+
+**Verificar logs:**
+```
+✅ MySQL ready! Host: mysql.railway.internal
+✅ Connected to MySQL successfully
+```
+
 ### Erro: "Connection refused" ou "Database timeout"
 - Verifique se o serviço MySQL está rodando
 - As variáveis `MYSQL*` são injetadas automaticamente
 - Aguarde 1-2 minutos após criar o banco
+- Verifique logs do MySQL: clique no serviço MySQL → **"Logs"**
 
 ### Erro: "Permission denied" nos logs
 - Já configurado no `Dockerfile.production`
