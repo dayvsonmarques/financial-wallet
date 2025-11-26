@@ -69,7 +69,7 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 ```
 
-5. **Gerar APP_KEY:**
+5. **⚠️ OBRIGATÓRIO - Gerar APP_KEY:**
    ```bash
    # Execute localmente:
    php artisan key:generate --show
@@ -79,16 +79,30 @@ QUEUE_CONNECTION=database
    ```
    APP_KEY=base64:xxxxxxxxxxx
    ```
+   
+   **IMPORTANTE:** Sem o APP_KEY a aplicação **NÃO FUNCIONARÁ**!
+
+6. **Verificar Variáveis MySQL:**
+   - Confirme que estas variáveis foram injetadas automaticamente pelo Railway:
+     - ✅ `MYSQLHOST`
+     - ✅ `MYSQLPORT`
+     - ✅ `MYSQLDATABASE`
+     - ✅ `MYSQLUSER`
+     - ✅ `MYSQLPASSWORD`
+   - **Se não aparecerem:** volte ao passo 3 e adicione o MySQL novamente
 
 ### 5. Configurar Domínio
 
 1. Vá em **"Settings"** → **"Networking"**
 2. Clique em **"Generate Domain"**
 3. Railway gerará uma URL (ex: `financial-wallet-production.up.railway.app`)
-4. Adicione essa URL como variável de ambiente:
+4. **⚠️ OBRIGATÓRIO - Adicionar APP_URL:**
+   - Volte em **"Variables"**
+   - Adicione:
    ```
    APP_URL=https://financial-wallet-production.up.railway.app
    ```
+   - Substitua pela URL gerada no passo 3
 
 ### 6. Aguardar Deploy
 
@@ -98,6 +112,22 @@ QUEUE_CONNECTION=database
 
 **Logs esperados:**
 ```
+🚀 Starting Carteira Financeira...
+📊 Database Configuration:
+  Host: mysql.railway.internal
+  Port: 3306
+  Database: railway
+✅ MySQL is ready!
+📦 Running migrations...
+⚡ Caching configuration...
+✅ Application is ready!
+🌐 Listening on port 8080
+```
+
+**Se o healthcheck falhar:**
+- Verifique se **APP_KEY** está configurado
+- Verifique se variáveis **MYSQL** existem
+- Veja logs completos em **"Deployments"** → **"View Logs"**
 🚀 Starting Carteira Financeira...
 ⏳ Waiting for database...
 ✅ Database is ready!

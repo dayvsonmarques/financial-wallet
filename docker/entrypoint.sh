@@ -72,5 +72,26 @@ fi
 echo "✅ Application is ready!"
 echo "🌐 Listening on port 8080"
 
+# Verificar configuração crítica
+echo "🔍 Checking critical configuration..."
+if [ -z "$APP_KEY" ]; then
+    echo "⚠️  WARNING: APP_KEY not set!"
+fi
+
+# Testar se o PHP-FPM está funcionando
+echo "🧪 Testing PHP-FPM..."
+php-fpm -t || {
+    echo "❌ PHP-FPM configuration test failed"
+    exit 1
+}
+
+# Testar se o Nginx está funcionando
+echo "🧪 Testing Nginx..."
+nginx -t || {
+    echo "❌ Nginx configuration test failed"
+    exit 1
+}
+
 # Iniciar supervisor
+echo "🚦 Starting Supervisor..."
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
