@@ -91,18 +91,33 @@ QUEUE_CONNECTION=database
      - ✅ `MYSQLPASSWORD`
    - **Se não aparecerem:** volte ao passo 3 e adicione o MySQL novamente
 
-### 5. Configurar Domínio
+### 5. Configurar Domínio e APP_URL
 
-1. Vá em **"Settings"** → **"Networking"**
-2. Clique em **"Generate Domain"**
-3. Railway gerará uma URL (ex: `financial-wallet-production.up.railway.app`)
-4. **⚠️ OBRIGATÓRIO - Adicionar APP_URL:**
+**Railway gera o domínio automaticamente no primeiro deploy!**
+
+1. **Após o deploy inicial:**
+   - Vá em **"Settings"** → **"Networking"**
+   - Railway já terá gerado uma URL pública
+   - Exemplo: `financial-wallet-production-abc123.up.railway.app`
+
+2. **⚠️ OBRIGATÓRIO - Configurar APP_URL:**
+   
+   **Opção 1 (Recomendado):** Usar variável automática do Railway
+   ```env
+   APP_URL=https://${{RAILWAY_PUBLIC_DOMAIN}}
+   ```
+   ✅ Atualiza automaticamente se o domínio mudar
+   
+   **Opção 2:** Copiar manualmente
+   ```env
+   APP_URL=https://sua-url-gerada.up.railway.app
+   ```
+   ⚠️ Precisa atualizar se regenerar o domínio
+   
+3. **Adicionar a variável:**
    - Volte em **"Variables"**
-   - Adicione:
-   ```
-   APP_URL=https://financial-wallet-production.up.railway.app
-   ```
-   - Substitua pela URL gerada no passo 3
+   - Cole a variável `APP_URL` escolhida acima
+   - **Importante:** Use HTTPS (não HTTP)
 
 ### 6. Aguardar Deploy
 

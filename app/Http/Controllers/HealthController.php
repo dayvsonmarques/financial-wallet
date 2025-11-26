@@ -12,7 +12,7 @@ class HealthController extends Controller
         try {
             // Verificar conexão com banco de dados
             DB::connection()->getPdo();
-            
+
             return response()->json([
                 'status' => 'healthy',
                 'database' => 'connected',
