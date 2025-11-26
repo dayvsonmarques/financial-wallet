@@ -2,7 +2,7 @@
 
 Sistema de carteira digital desenvolvido em Laravel que permite transferências, depósitos e gestão de saldo entre usuários.
 
-![Dashboard da Carteira Financeira](public/dashboard.png)
+![Dashboard da Carteira Financeira](docs/images/dashboard.png)
 
 ## Tecnologias
 
