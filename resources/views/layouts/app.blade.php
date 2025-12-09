@@ -9,6 +9,7 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .header { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 10px; }
         .nav { display: flex; justify-content: space-between; align-items: center; }
         .nav-links { display: flex; gap: 15px; list-style: none; }
         .nav-links a { text-decoration: none; color: #333; padding: 8px 16px; border-radius: 4px; transition: background 0.2s; }
@@ -48,23 +49,30 @@
 <body>
     <div class="container">
         <div class="header">
+            @auth
+            <div class="topbar">
+                <span style="color:#555;">Logado como: <strong>{{ Auth::user()->name }}</strong> <span style="color:#888;">({{ Auth::user()->email }})</span></span>
+                <form method="POST" action="/logout" style="display:inline;">
+                    @csrf
+                    <button type="submit" class="btn btn-secondary" style="padding: 6px 12px;">Sair</button>
+                </form>
+            </div>
+            @else
+            <div class="topbar">
+                <a href="/login" class="btn btn-secondary" style="background:#6c757d;">Entrar</a>
+                <a href="/register" class="btn btn-secondary" style="background:#6c757d;">Cadastrar</a>
+            </div>
+            @endauth
             <nav class="nav">
                 <div>
                     <a href="/" style="font-size: 20px; font-weight: bold; text-decoration: none; color: #333;">💰 Carteira Financeira</a>
                 </div>
                 <ul class="nav-links">
                     @auth
-                        <li style="color:#555; padding:8px 0;">Logado como: <strong>{{ Auth::user()->name }}</strong> <span style="color:#888;">({{ Auth::user()->email }})</span></li>
                         <li><a href="/dashboard">Painel</a></li>
                         <li><a href="/transactions">Transações</a></li>
                         <li><a href="/transactions/transfer">Transferir</a></li>
                         <li><a href="/transactions/deposit">Depositar</a></li>
-                        <li>
-                            <form method="POST" action="/logout" style="display: inline;">
-                                @csrf
-                                <button type="submit" class="btn btn-secondary" style="padding: 8px 16px;">Sair</button>
-                            </form>
-                        </li>
                     @else
                         <li><a href="/login">Entrar</a></li>
                         <li><a href="/register">Cadastrar</a></li>
