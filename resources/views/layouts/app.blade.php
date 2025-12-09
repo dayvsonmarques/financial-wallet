@@ -54,6 +54,7 @@
                 </div>
                 <ul class="nav-links">
                     @auth
+                        <li style="color:#555; padding:8px 0;">Logado como: <strong>{{ Auth::user()->name }}</strong> <span style="color:#888;">({{ Auth::user()->email }})</span></li>
                         <li><a href="/dashboard">Painel</a></li>
                         <li><a href="/transactions">Transações</a></li>
                         <li><a href="/transactions/transfer">Transferir</a></li>

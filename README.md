@@ -1,6 +1,6 @@
 # Carteira Financeira
 
-Sistema de carteira digital desenvolvido em Laravel que permite transferências, depósitos e gestão de saldo entre usuários.
+Sistema web de carteira digital para gerenciamento de transferências, depósitos e saldo entre usuários.
 
 ![Dashboard da Carteira Financeira](docs/images/dashboard.png)
 
