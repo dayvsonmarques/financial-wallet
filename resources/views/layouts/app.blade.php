@@ -9,7 +9,9 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
         .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .header { background: white; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 10px; margin-bottom: 10px; padding: 8px 12px; background: #f0f2f5; border-radius: 6px; }
+        .topbar span { font-size: 14px; }
+        .topbar .btn { padding: 6px 12px; font-size: 13px; }
         .nav { display: flex; justify-content: space-between; align-items: center; }
         .nav-links { display: flex; gap: 15px; list-style: none; }
         .nav-links a { text-decoration: none; color: #333; padding: 8px 16px; border-radius: 4px; transition: background 0.2s; }
