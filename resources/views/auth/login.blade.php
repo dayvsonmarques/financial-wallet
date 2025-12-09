@@ -3,8 +3,8 @@
 @section('title', 'Entrar - Carteira Financeira')
 
 @section('content')
-<div class="card" style="max-width: 400px; margin: 0 auto;">
-    <h2 style="margin-bottom: 20px;">Entrar</h2>
+<div class="card card-auth">
+    <h2 class="mb-20">Entrar</h2>
 
     <form method="POST" action="/login">
         @csrf
@@ -19,15 +19,15 @@
             <input type="password" id="password" name="password" required>
         </div>
 
-        <div class="form-group" style="display: flex; align-items: center; gap: 8px;">
-            <input type="checkbox" id="remember" name="remember" style="margin: 0;">
-            <label for="remember" style="margin: 0; cursor: pointer;">Lembrar-me</label>
+        <div class="form-group flex-align gap-8">
+            <input type="checkbox" id="remember" name="remember" class="m-0">
+            <label for="remember" class="m-0 pointer">Lembrar-me</label>
         </div>
 
-        <button type="submit" class="btn" style="width: 100%;">Entrar</button>
+        <button type="submit" class="btn btn-block">Entrar</button>
     </form>
 
-    <div style="margin-top: 20px; text-align: center;">
+    <div class="mt-20 text-center">
         <a href="/register">Não tem uma conta? Cadastre-se</a>
     </div>
 </div>

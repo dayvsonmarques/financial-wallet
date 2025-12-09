@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="card" style="max-width: 600px; margin: 0 auto;">
-    <h2 style="margin-bottom: 20px;">Depositar Dinheiro</h2>
-    <p style="color: #666; margin-bottom: 20px;">Seu saldo atual: <strong>R$ {{ number_format(auth()->user()->balance, 2, ',', '.') }}</strong></p>
+    <h2 class="mb-20">Depositar Dinheiro</h2>
+    <p class="text-muted mb-20">Seu saldo atual: <strong>R$ {{ number_format(auth()->user()->balance, 2, ',', '.') }}</strong></p>
 
     <form method="POST" action="/transactions/deposit">
         @csrf
@@ -20,7 +20,7 @@
             <textarea id="description" name="description">{{ old('description') }}</textarea>
         </div>
 
-        <div style="display: flex; gap: 10px;">
+            <div class="flex-gap-10">
             <button type="submit" class="btn btn-success">Depositar</button>
             <a href="/dashboard" class="btn btn-secondary">Cancelar</a>
         </div>

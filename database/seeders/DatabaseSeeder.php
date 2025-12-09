@@ -46,8 +46,19 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Usuário com saldo negativo para testes manuais
+        User::updateOrCreate(
+            ['email' => 'negativo@exemplo.com'],
+            [
+                'name' => 'Usuário Negativo',
+                'email_verified_at' => now(),
+                'password' => bcrypt('password'),
+                'balance' => -100.00,
+            ]
+        );
+
         // Criar usuários aleatórios apenas se ainda houver poucos usuários
-        $desiredTotal = 8; // 3 fixos + 5 aleatórios
+        $desiredTotal = 9; // 4 fixos + 5 aleatórios
         $current = User::count();
         if ($current < $desiredTotal) {
             $toCreate = $desiredTotal - $current;

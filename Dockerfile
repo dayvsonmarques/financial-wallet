@@ -1,3 +1,10 @@
+FROM node:20-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json* yarn.lock* pnpm-lock.yaml* ./
+RUN npm ci || true
+COPY . .
+RUN npm run build
+
 FROM php:8.2-fpm
 
 WORKDIR /var/www/html
@@ -14,6 +21,8 @@ RUN mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/{session
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 COPY docker-entrypoint.sh /usr/local/bin/
+COPY --from=assets /app/public/build /var/www/html/public/build
+COPY --from=assets /app/public/assets /var/www/html/public/assets
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8000

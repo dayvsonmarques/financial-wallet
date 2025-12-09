@@ -15,7 +15,7 @@ Sistema web de carteira digital para gerenciamento de transferências, depósito
 
 ### Desenvolvimento Local
 
-Você só precisa ter Docker e Docker Compose instalados. Depois é só executar:
+Necessário ter Docker e Docker Compose instalados. Depois é só executar:
 
 ```bash
 ./docker-init.sh
@@ -25,18 +25,7 @@ Esse script faz tudo: cria o `.env`, sobe os containers, roda as migrações e s
 
 Observação: no primeiro start o app pode demorar um pouco enquanto o Composer instala dependências dentro do container.
 
-### Deploy em Produção (Railway.app)
-
-Para fazer deploy em produção, consulte o guia completo: **[DEPLOY.md](DEPLOY.md)**
-
-**Resumo rápido:**
-1. Faça push do código para GitHub
-2. Conecte seu repositório no [Railway.app](https://railway.app)
-3. Adicione MySQL database
-4. Configure variáveis de ambiente
-5. Deploy automático! 🚀
-
-## Comandos que você pode precisar
+## Comandos úteis
 
 ```bash
 # Iniciar/parar
@@ -131,7 +120,17 @@ docker compose up -d app
    - Senha: `password`
    - Saldo inicial: `R$ 50,00`
 
+4. **Usuário Negativo**
+   - Email: `negativo@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `-R$ 100,00`
+
 Esses usuários são criados automaticamente quando você roda o `docker-init.sh`. Você pode usar essas credenciais para fazer login na aplicação e testar as funcionalidades.
+
+Para validar manualmente o depósito cobrindo déficit:
+- Faça login com `negativo@exemplo.com` / `password`
+- Observe o saldo negativo
+- Realize um depósito (ex.: `R$ 150,00`) e verifique que o saldo passa para `R$ 50,00` (primeiro cobre o negativo, depois soma o excedente)
 
 ## Testes
 
