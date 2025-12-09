@@ -15,31 +15,43 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Criar usuário admin de teste
-        User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@exemplo.com',
-            'password' => bcrypt('password'),
-            'balance' => 10000.00,
-        ]);
+        // Usuários fixos: idempotente usando updateOrCreate por email
+        User::updateOrCreate(
+            ['email' => 'admin@exemplo.com'],
+            [
+                'name' => 'Admin User',
+                'email_verified_at' => now(),
+                'password' => bcrypt('password'),
+                'balance' => 10000.00,
+            ]
+        );
 
-        // Criar usuário de teste comum
-        User::factory()->create([
-            'name' => 'Teste User',
-            'email' => 'teste@exemplo.com',
-            'password' => bcrypt('password'),
-            'balance' => 1000.00,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'teste@exemplo.com'],
+            [
+                'name' => 'Teste User',
+                'email_verified_at' => now(),
+                'password' => bcrypt('password'),
+                'balance' => 1000.00,
+            ]
+        );
 
-        // Criar usuário com saldo baixo
-        User::factory()->create([
-            'name' => 'João Silva',
-            'email' => 'joao@exemplo.com',
-            'password' => bcrypt('password'),
-            'balance' => 50.00,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'joao@exemplo.com'],
+            [
+                'name' => 'João Silva',
+                'email_verified_at' => now(),
+                'password' => bcrypt('password'),
+                'balance' => 50.00,
+            ]
+        );
 
-        // Criar mais 5 usuários aleatórios
-        User::factory(5)->create();
+        // Criar usuários aleatórios apenas se ainda houver poucos usuários
+        $desiredTotal = 8; // 3 fixos + 5 aleatórios
+        $current = User::count();
+        if ($current < $desiredTotal) {
+            $toCreate = $desiredTotal - $current;
+            User::factory($toCreate)->create();
+        }
     }
 }

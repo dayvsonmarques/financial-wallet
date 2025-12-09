@@ -9,6 +9,7 @@ services:
       - ./:/var/www/html
     ports:
       - "8000:8000"
+    entrypoint: ["/bin/bash", "-lc", "/var/www/html/docker-entrypoint.sh php artisan serve --host=0.0.0.0 --port=8000"]
     depends_on:
       mariadb:
         condition: service_healthy
