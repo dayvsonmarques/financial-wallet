@@ -23,6 +23,8 @@ Você só precisa ter Docker e Docker Compose instalados. Depois é só executar
 
 Esse script faz tudo: cria o `.env`, sobe os containers, roda as migrações e seeders. Quando terminar, acesse `http://localhost:8000`.
 
+Observação: no primeiro start o app pode demorar um pouco enquanto o Composer instala dependências dentro do container.
+
 ### Deploy em Produção (Railway.app)
 
 Para fazer deploy em produção, consulte o guia completo: **[DEPLOY.md](DEPLOY.md)**
@@ -63,6 +65,46 @@ docker compose exec app bash
 - Se o script pedir senha sudo, é normal - ele precisa corrigir ownership de arquivos
 - Arquivos criados manualmente podem precisar de correção de permissões
 - **Solução rápida**: Se persistir, execute `sudo ./fix-permissions.sh` uma vez
+
+### Solução de Problemas (Docker)
+
+- App reiniciando em loop (Restarting 255): normalmente é falta do `vendor/autoload.php`. O entrypoint já instala o Composer automaticamente. Confira logs:
+   ```bash
+   docker compose logs -n 200 app
+   ```
+   Se necessário, force recriação apenas do app:
+   ```bash
+   docker compose up -d --force-recreate app
+   ```
+
+- Erro de chave do app (permission denied em `.env` ao rodar `key:generate`): use o wrapper e/ou corrija permissões:
+   ```bash
+   ./fix-permissions.sh
+   ./artisan-wrapper.sh key:generate --force
+   ```
+
+- Seeder duplicando emails (UniqueConstraintViolation): os seeders são idempotentes. Se o erro ocorrer vindo de um estado antigo, reexecute:
+   ```bash
+   ./artisan-wrapper.sh migrate --force
+   ./artisan-wrapper.sh db:seed --force
+   ```
+   Em último caso (reset total do banco local):
+   ```bash
+   docker compose down -v
+   ./docker-init.sh
+   ```
+
+- Porta 8000 ocupada: ajuste a porta no `docker-compose.yml` (ex.: `8080:8000`) e acesse `http://localhost:8080`.
+
+### Reset rápido do ambiente
+
+```bash
+docker compose down
+docker compose up -d mariadb
+docker compose up -d app
+./artisan-wrapper.sh migrate --force
+./artisan-wrapper.sh db:seed --force
+```
 
 ## Credenciais
 
