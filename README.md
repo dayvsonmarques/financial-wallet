@@ -1,5 +1,239 @@
 # Carteira Financeira
 
+Sistema web de carteira digital para gerenciamento de transferências, depósitos, estornos e saldo entre usuários.
+
+![Dashboard da Carteira Financeira](docs/images/dashboard.png)
+
+## Início Rápido
+
+Requisitos: Docker e Docker Compose instalados.
+
+```bash
+./docker-init.sh
+```
+
+O script faz automaticamente:
+- Criação do `.env` (se não existir)
+- Instalação do Composer (dentro do container)
+- Geração da `APP_KEY`
+- Migrações e seeders
+- Ajuste de permissões
+- Subida dos containers `app` e `mariadb`
+
+Ao concluir, acesse: `http://localhost:8000`.
+
+Observação: no primeiro start o app pode demorar enquanto o Composer instala dependências.
+
+## Tecnologias
+
+- Laravel 12
+- PHP 8.2
+- MariaDB 10.11
+- Docker + Docker Compose
+
+## Comandos Úteis
+
+```bash
+# Subir / parar
+docker compose up -d
+docker compose down
+
+# Executar comandos artisan (use SEMPRE o wrapper para evitar permissões)
+./artisan-wrapper.sh migrate
+./artisan-wrapper.sh db:seed --force
+./artisan-wrapper.sh make:controller NomeController
+# Alternativa (não recomendado diretamente):
+docker compose exec -u www-data app php artisan [comando]
+
+# Corrigir permissões (execute se houver erros de permissão)
+./fix-permissions.sh
+
+# Logs
+docker compose logs -f app
+
+# Entrar no container
+docker compose exec app bash
+```
+
+⚠️ Importante sobre permissões
+- Use `./artisan-wrapper.sh` para comandos artisan
+- Se houver erros de permissão, rode `./fix-permissions.sh`
+- Se o script pedir senha sudo, é normal (corrige ownership)
+- Arquivos criados manualmente podem precisar de correção de permissões
+- Em caso persistente, execute uma vez: `sudo ./fix-permissions.sh`
+
+## Solução de Problemas (Docker)
+
+- App reiniciando em loop (Restarting 255) — geralmente falta `vendor/autoload.php`. O entrypoint instala o Composer automaticamente. Verifique logs:
+  ```bash
+  docker compose logs -n 200 app
+  ```
+  Se necessário, recrie apenas o app:
+  ```bash
+  docker compose up -d --force-recreate app
+  ```
+
+- Erro de chave (permission denied ao gerar `APP_KEY`) — corrija permissões e gere a chave via wrapper:
+  ```bash
+  ./fix-permissions.sh
+  ./artisan-wrapper.sh key:generate --force
+  ```
+
+- Seeder duplicando e-mails (UniqueConstraintViolation) — os seeders são idempotentes. Se o erro vier de estado antigo, reexecute:
+  ```bash
+  ./artisan-wrapper.sh migrate --force
+  ./artisan-wrapper.sh db:seed --force
+  ```
+  Reset total do banco local (último caso):
+  ```bash
+  docker compose down -v
+  ./docker-init.sh
+  ```
+
+- Porta 8000 ocupada — altere a porta no `docker-compose.yml` (ex.: `8080:8000`) e acesse `http://localhost:8080`.
+
+### Reset Rápido do Ambiente
+
+```bash
+docker compose down
+docker compose up -d mariadb
+docker compose up -d app
+./artisan-wrapper.sh migrate --force
+./artisan-wrapper.sh db:seed --force
+```
+
+## Credenciais
+
+**Banco de dados**
+- Host: `localhost:3307`
+- Usuário: `financial_wallet_user`
+- Senha: `financial_wallet_password`
+- Database: `financial_wallet`
+
+**Usuários de teste (criados automaticamente pelos seeders):**
+
+1. Admin User
+   - Email: `admin@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `R$ 10.000,00`
+
+2. Teste User
+   - Email: `teste@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `R$ 1.000,00`
+
+3. João Silva
+   - Email: `joao@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `R$ 50,00`
+
+4. Usuário Negativo
+   - Email: `negativo@exemplo.com`
+   - Senha: `password`
+   - Saldo inicial: `-R$ 100,00`
+
+Você pode usar essas credenciais para login e testes.
+
+### Validar depósito cobrindo déficit
+- Faça login com `negativo@exemplo.com` / `password`
+- Observe o saldo negativo
+- Faça um depósito (ex.: `R$ 150,00`)
+- O saldo deve ficar `R$ 50,00` (primeiro cobre o negativo, depois soma o excedente)
+
+## Testes
+
+Rode os testes com o artisan dentro do container. Exemplos:
+
+```bash
+# Todos os testes
+./artisan-wrapper.sh test
+
+# Apenas unitários
+./artisan-wrapper.sh test --testsuite=Unit
+
+# Apenas de integração
+./artisan-wrapper.sh test --testsuite=Feature
+```
+
+Alternativa direta (quando necessário):
+```bash
+docker compose exec app php artisan test
+```
+
+Atualmente temos **55 testes** cobrindo:
+- Serviços de transação (transferência, depósito, estorno)
+- Modelos (User, Transaction)
+- Endpoints da API (autenticação, transações, wallet)
+- Regras de negócio e validações
+
+## Segurança
+
+Camadas de proteção ativas contra abusos e fraudes.
+
+### Rate Limiting
+
+Login e Registro
+- 5 tentativas/minuto por IP (mitiga brute force)
+
+Transferências
+- 5/minuto por usuário
+- 50/hora por usuário
+
+Depósitos
+- 5/minuto por usuário
+- 20/hora por usuário
+
+Reversões (Estornos)
+- 3/minuto por usuário
+- 10/hora por usuário
+
+API Geral
+- 60 requisições/minuto por usuário/IP
+
+Excedendo os limites
+- Retorna HTTP 429 com tempo de espera
+
+### Outras Proteções
+
+- Autenticação com sessões seguras (Laravel Sanctum)
+- CSRF protection em todos os formulários
+- Hash seguro de senhas (bcrypt)
+- Tokens com expiração
+- Validações de saldo e limites por hora
+- Eloquent ORM e prepared statements (mitiga SQL Injection)
+- Transações atômicas (ACID) e locks (evita race conditions)
+- Reversão automática em caso de erro
+- Logs de auditoria de operações sensíveis
+
+## Observabilidade
+
+**Logs de transações**
+- `storage/logs/transactions.log` — início, conclusão e falhas (retém 30 dias)
+
+**Monitoramento de requisições**
+- Middleware registra tempo de resposta, uso de memória e status HTTP
+
+**Health checks**
+- `GET /up` — básico do Laravel
+- `GET /api/health` — detalhado (database, cache, tempo de resposta)
+
+Ver logs em tempo real:
+```bash
+# Logs gerais
+docker compose exec app tail -f storage/logs/laravel.log
+
+# Logs de transações
+docker compose exec app tail -f storage/logs/transactions.log
+```
+
+## Notas sobre Front-end (CSS/Vite)
+
+- O CSS principal é servido via `public/css/app.css` (sem depender do Vite em desenvolvimento).
+- O `Dockerfile` possui estágio para construir assets via Node; após um rebuild da imagem, os artefatos ficam disponíveis em `public/build` caso você decida usar `@vite` nas views.
+- Em produção, prefira buildar os assets no pipeline e servir estáticos do `public/`.
+
+# Carteira Financeira
+
 Sistema web de carteira digital para gerenciamento de transferências, depósitos e saldo entre usuários.
 
 ![Dashboard da Carteira Financeira](docs/images/dashboard.png)
